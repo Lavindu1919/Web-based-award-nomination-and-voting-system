@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/head :: head('Award Programmes')}"></head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div><div class="page-eyebrow">Module 2 — Award Management</div><h2 class="mb-0"><i class="bi bi-award me-2"></i>Award Programmes</h2></div>
+        <a th:href="@{/awards/new}" class="btn btn-gold"
+           th:if="${session.loggedInUser != null and session.loggedInUser.hasPermission(T(com.sliit.awardvote.user.model.Permission).MANAGE_AWARDS)}">
+            <i class="bi bi-plus-circle me-1"></i>New Programme
+        </a>
+    </div>
+
+    <div class="row g-4 reveal-grid">
+        <div class="col-md-6 col-lg-4" th:each="p : ${programmes}">
+            <div class="av-card h-100">
+                <div class="card-header-plate d-flex justify-content-between align-items-center">
+                    <span th:text="${p.name}">Programme</span>
+                    <span class="badge-status" th:classappend="'badge-' + ${#strings.toLowerCase(p.status)}" th:text="${p.status}">OPEN</span>
+                </div>
+                <div class="p-3">
+                    <p class="text-muted small mb-2" th:text="${p.year}">2026</p>
+                    <p th:text="${p.description}">Description</p>
+                    <div class="d-flex gap-2 mt-3">
+                        <a th:href="@{'/awards/' + ${p.id}}" class="btn btn-outline-navy btn-sm"
+                           th:if="${session.loggedInUser != null and session.loggedInUser.hasPermission(T(com.sliit.awardvote.user.model.Permission).VOTE)}">
+                            <i class="bi bi-hand-thumbs-up me-1"></i>View &amp; Vote
+                        </a>
+                        <a th:href="@{'/awards/' + ${p.id}}" class="btn btn-outline-navy btn-sm"
+                           th:unless="${session.loggedInUser != null and session.loggedInUser.hasPermission(T(com.sliit.awardvote.user.model.Permission).VOTE)}">
+                            <i class="bi bi-eye me-1"></i>View
+                        </a>
+                        <a th:href="@{'/awards/' + ${p.id} + '/edit'}" class="btn btn-outline-secondary btn-sm"
+                           th:if="${session.loggedInUser != null and session.loggedInUser.hasPermission(T(com.sliit.awardvote.user.model.Permission).MANAGE_AWARDS)}"><i class="bi bi-pencil me-1"></i>Edit</a>
+                        <a th:href="@{'/awards/' + ${p.id} + '/delete'}" class="btn btn-outline-danger btn-sm"
+                           onclick="return confirm('Delete this programme?')"
+                           th:if="${session.loggedInUser != null and session.loggedInUser.hasPermission(T(com.sliit.awardvote.user.model.Permission).MANAGE_AWARDS)}"><i class="bi bi-trash me-1"></i>Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12" th:if="${#lists.isEmpty(programmes)}">
+            <div class="empty-state"><i class="bi bi-award"></i><p>No award programmes yet.</p><p class="small">Create one to get started.</p></div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

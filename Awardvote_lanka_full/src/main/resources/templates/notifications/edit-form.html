@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/head :: head('Edit Notification')}"></head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="container py-5" style="max-width:640px;">
+    <div class="page-eyebrow">Module 4 — Notification &amp; Feedback Management</div>
+    <h2 class="mb-4"><i class="bi bi-pencil me-2"></i>Edit Notification</h2>
+
+    <div class="alert alert-info py-2"><i class="bi bi-info-circle me-1"></i>Editing corrects the stored record only — it will not re-send the message to the recipient.</div>
+
+    <div class="av-card p-4">
+        <form th:action="@{'/notifications/' + ${notification.id} + '/update'}" method="post">
+            <div class="mb-3">
+                <label class="form-label">Recipient</label>
+                <select name="recipientId" class="form-select" required>
+                    <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.fullName} + ' (' + ${u.username} + ')'"
+                            th:selected="${notification.recipient != null and notification.recipient.id == u.id}"></option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Message</label>
+                <textarea name="message" class="form-control" rows="4" required th:text="${notification.message}"></textarea>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Channel</label>
+                    <select name="type" class="form-select">
+                        <option th:each="t : ${types}" th:value="${t}" th:text="${t}" th:selected="${notification.type == t}"></option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${notification.status == s}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Related To <span class="text-muted fw-normal">(optional)</span></label>
+                <input type="text" name="relatedEntity" class="form-control" th:value="${notification.relatedEntity}">
+            </div>
+            <button type="submit" class="btn btn-navy"><i class="bi bi-check-lg me-1"></i>Save Changes</button>
+            <a th:href="@{/notifications}" class="btn btn-outline-secondary"><i class="bi bi-x-lg me-1"></i>Cancel</a>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

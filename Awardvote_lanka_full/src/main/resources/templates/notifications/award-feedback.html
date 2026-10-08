@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--
+  Award Feedback section (Notification & Feedback Management module).
+  Included on the award programme page via:
+    <div th:replace="~{notifications/award-feedback :: awardFeedbackSection}"></div>
+  Expects model attributes: programme, awardFeedback, currentUserId.
+-->
+<th:block th:fragment="awardFeedbackSection">
+    <div id="award-feedback" class="mt-4">
+        <div class="ledger-rule"><span><i class="bi bi-chat-square-text me-1"></i>Feedback</span></div>
+
+        <form th:if="${session.loggedInUser != null}"
+              th:action="@{'/awards/' + ${programme.id} + '/feedback/submit'}" method="post" class="av-card p-3 mb-3">
+            <label class="form-label small text-muted mb-1">Share your thoughts on this award programme</label>
+            <textarea name="message" class="form-control mb-2" rows="2" maxlength="1000" required
+                      placeholder="Write your feedback..."></textarea>
+            <button type="submit" class="btn btn-gold btn-sm"><i class="bi bi-send me-1"></i>Post Feedback</button>
+        </form>
+        <div class="av-card p-3 mb-3" th:if="${session.loggedInUser == null}">
+            <p class="text-muted small mb-0"><i class="bi bi-info-circle me-1"></i>
+                <a th:href="@{/login}">Log in</a> to leave feedback on this award programme.</p>
+        </div>
+
+        <div class="d-flex flex-column gap-2">
+            <div class="av-card p-3" th:each="fb : ${awardFeedback}">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="fw-semibold" th:text="${fb.user != null ? fb.user.fullName : 'User'}">Author</span>
+                        <span class="text-muted small ms-2" th:text="${#temporals.format(fb.createdAt, 'dd MMM yyyy, HH:mm')}">Date</span>
+                    </div>
+                    <div class="d-flex gap-1" th:if="${currentUserId != null and fb.user != null and fb.user.id == currentUserId}">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse"
+                                th:data-bs-target="'#editFb' + ${fb.id}"><i class="bi bi-pencil"></i></button>
+                        <a th:href="@{'/awards/feedback/' + ${fb.id} + '/delete'}" class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('Delete this feedback?')"><i class="bi bi-trash"></i></a>
+                    </div>
+                    <div class="d-flex gap-1"
+                         th:if="${(currentUserId == null or fb.user == null or fb.user.id != currentUserId) and session.loggedInUser != null and session.loggedInUser.hasPermission(T(com.sliit.awardvote.user.model.Permission).HANDLE_FEEDBACK)}">
+                        <a th:href="@{'/awards/feedback/' + ${fb.id} + '/delete'}" class="btn btn-sm btn-outline-danger"
+                           title="Remove (moderator)" onclick="return confirm('Remove this feedback?')"><i class="bi bi-trash"></i></a>
+                    </div>
+                </div>
+                <p class="mb-0 mt-1" th:text="${fb.message}">Message</p>
+
+                <div class="collapse mt-2" th:id="'editFb' + ${fb.id}"
+                     th:if="${currentUserId != null and fb.user != null and fb.user.id == currentUserId}">
+                    <form th:action="@{'/awards/feedback/' + ${fb.id} + '/update'}" method="post" class="d-flex gap-2">
+                        <textarea name="message" class="form-control form-control-sm" rows="2" maxlength="1000" required th:text="${fb.message}"></textarea>
+                        <button type="submit" class="btn btn-sm btn-navy align-self-start"><i class="bi bi-check-lg"></i></button>
+                    </form>
+                </div>
+            </div>
+            <div class="empty-state" th:if="${#lists.isEmpty(awardFeedback)}">
+                <i class="bi bi-chat-square-text"></i>
+                <p class="mb-0 small">No feedback yet — be the first to share your thoughts.</p>
+            </div>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

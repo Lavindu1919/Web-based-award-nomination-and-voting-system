@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/head :: head(${nomination.nomineeName})}"></head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="container py-5" style="max-width:760px;">
+
+    <div class="d-flex justify-content-between align-items-start mb-2">
+        <h2 class="mb-1" th:text="${nomination.nomineeName}">Nominee</h2>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge-status" th:classappend="'badge-' + ${#strings.toLowerCase(nomination.status)}" th:text="${nomination.status}">STATUS</span>
+            <a th:if="${session.loggedInUser != null and session.loggedInUser.hasPermission(T(com.sliit.awardvote.user.model.Permission).MANAGE_NOMINEES)}"
+               th:href="@{'/nominations/' + ${nomination.id} + '/edit'}" class="btn btn-sm btn-outline-navy"><i class="bi bi-pencil me-1"></i>Edit</a>
+            <form th:if="${session.loggedInUser != null and session.loggedInUser.hasPermission(T(com.sliit.awardvote.user.model.Permission).MANAGE_NOMINEES)}"
+                  th:action="@{'/nominations/' + ${nomination.id} + '/delete'}" method="post"
+                  onsubmit="return confirm('Delete this nominee? This cannot be undone.');">
+                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash me-1"></i>Delete</button>
+            </form>
+        </div>
+    </div>
+    <p class="text-muted mb-1" th:text="'Category: ' + (${nomination.category != null} ? ${nomination.category.name} : '-')">Category</p>
+    <p th:text="${nomination.description}">Description</p>
+    <p th:if="${nomination.evidenceUrl}"><strong>Evidence:</strong>
+        <span class="badge text-bg-secondary me-1" th:with="evType=${T(com.sliit.awardvote.nominee.util.EvidenceLinkValidator).describe(nomination.evidenceUrl)}"
+              th:if="${!#strings.isEmpty(T(com.sliit.awardvote.nominee.util.EvidenceLinkValidator).describe(nomination.evidenceUrl))}"
+              th:text="${evType}">Type</span>
+        <a th:href="${nomination.evidenceUrl}" th:text="${nomination.evidenceUrl}" target="_blank" rel="noopener noreferrer"></a></p>
+    <p th:if="${nomination.reviewComment}" class="text-muted small"><strong>Review comment:</strong> <span th:text="${nomination.reviewComment}"></span></p>
+
+    <div class="row g-3 my-3">
+        <div class="col-6 col-md-3">
+            <div class="stat-tile stat-tile-blue">
+                <div class="stat-value count-up" th:attr="data-target=${nomination.voteCount}">0</div>
+                <div class="stat-label">Public Votes</div>
+                <div class="vote-bar-track"><div class="vote-bar-fill" th:attr="data-width=${nomination.voteSharePercent}"></div></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-tile stat-tile-purple"><div class="stat-value" th:text="${#numbers.formatDecimal(nomination.averageScore,1,1)}">0.0</div><div class="stat-label">Avg. Judge Score</div></div>
+        </div>
+    </div>
+
+    <div class="alert alert-info py-2" th:if="${voteMessage}" th:text="${voteMessage}"></div>
+    <div class="alert alert-info py-2" th:if="${scoreMessage}" th:text="${scoreMessage}"></div>
+
+    <!-- Awards Staff / Admin: review decision -->
+    <div class="av-card p-3 mb-3"
+         th:if="${session.loggedInUser != null and session.loggedInUser.hasPermission(T(com.sliit.awardvote.user.model.Permission).REVIEW_NOMINATIONS)}">
+        <h5><i class="bi bi-clipboard-check me-1"></i>Review this nomination</h5>
+        <form th:action="@{'/nominations/' + ${nomination.id} + '/review'}" method="post" class="row g-2">
+            <div class="col-md-4">
+                <select name="decision" class="form-select">
+                    <option value="UNDER_REVIEW">Mark Under Review</option>
+                    <option value="APPROVED">Approve</option>
+                    <option value="REJECTED">Reject</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <input type="text" name="comment" class="form-control" placeholder="Review comment (optional)">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-navy w-100"><i class="bi bi-check-lg me-1"></i>Save</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Public User: vote (one vote per award category) -->
+    <div class="av-card p-3 mb-3"
+         th:if="${session.loggedInUser != null and session.loggedInUser.hasPermission(T(com.sliit.awardvote.user.model.Permission).VOTE) and nomination.status.name() == 'APPROVED'}">
+
+        <!-- Case 1: user already voted for THIS nominee -->
+        <div th:if="${existingVoteNominee != null and existingVoteNominee.id == nomination.id}">
+            <h5 class="text-success"><i class="bi bi-hand-thumbs-up-fill me-1"></i>You voted for this nominee</h5>
+            <p class="text-muted small mb-0">Only one vote is allowed per award category, and this is your pick for
+                <strong th:text="${nomination.category.name}">this category</strong>.</p>
+        </div>
+
+        <!-- Case 2: user already voted for a DIFFERENT nominee in this category -->
+        <div th:if="${existingVoteNominee != null and existingVoteNominee.id != nomination.id}">
+            <h5 class="text-muted"><i class="bi bi-lock me-1"></i>Vote already used for this category</h5>
+            <p class="text-muted small mb-0">
+                You already voted for <strong th:text="${existingVoteNominee.nomineeName}">another nominee</strong>
+                in <strong th:text="${nomination.category.name}">this category</strong>.
+                Only one vote per category is allowed, so this pick can't be changed here.
+            </p>
+        </div>
+
+        <!-- Case 3: no vote cast yet in this category -->
+        <div th:if="${existingVoteNominee == null}">
+            <h5><i class="bi bi-hand-thumbs-up me-1"></i>Cast your vote</h5>
+            <p class="text-muted small">You can vote for one nominee per award category. This is your only vote in
+                <strong th:text="${nomination.category != null ? nomination.category.name : 'this category'}">this category</strong>.</p>
+            <form th:action="@{'/nominations/' + ${nomination.id} + '/vote'}" method="post">
+                <button type="submit" class="btn btn-gold"><i class="bi bi-hand-thumbs-up-fill me-1"></i>Vote for this nominee</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Judge: pick one nominee per award category -->
+    <div class="av-card p-3 mb-3"
+         th:if="${session.loggedInUser != null and session.loggedInUser.hasPermission(T(com.sliit.awardvote.user.model.Permission).JUDGE_NOMINATIONS) and nomination.status.name() == 'APPROVED'}">
+
+        <!-- Case 1: judge already picked THIS nominee -->
+        <div th:if="${existingJudgmentNominee != null and existingJudgmentNominee.id == nomination.id}">
+            <h5 class="text-success"><i class="bi bi-star-fill me-1"></i>You judged this nominee</h5>
+            <p class="text-muted small mb-0">Only one judged pick is allowed per award category, and this is your pick for
+                <strong th:text="${nomination.category.name}">this category</strong>.</p>
+        </div>
+
+        <!-- Case 2: judge already picked a DIFFERENT nominee in this category -->
+        <div th:if="${existingJudgmentNominee != null and existingJudgmentNominee.id != nomination.id}">
+            <h5 class="text-muted"><i class="bi bi-lock me-1"></i>Judging already used for this category</h5>
+            <p class="text-muted small mb-0">
+                You already judged <strong th:text="${existingJudgmentNominee.nomineeName}">another nominee</strong>
+                in <strong th:text="${nomination.category.name}">this category</strong>.
+                Only one pick per category is allowed, so this can't be changed here.
+            </p>
+        </div>
+
+        <!-- Case 3: no judgment recorded yet in this category -->
+        <div th:if="${existingJudgmentNominee == null}">
+            <h5><i class="bi bi-star me-1"></i>Submit your evaluation</h5>
+            <p class="text-muted small">Pick one nominee per award category. This is your only judged pick in
+                <strong th:text="${nomination.category != null ? nomination.category.name : 'this category'}">this category</strong>.</p>
+            <form th:action="@{'/nominations/' + ${nomination.id} + '/score'}" method="post" class="row g-2">
+                <div class="col-md-3">
+                    <input type="number" step="0.1" min="0" max="10" name="value" class="form-control" placeholder="Score (0-10)" required>
+                </div>
+                <div class="col-md-7">
+                    <input type="text" name="comments" class="form-control" placeholder="Comments (optional)">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-navy w-100"><i class="bi bi-check-lg me-1"></i>Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <a th:href="@{/nominations}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back to Nominations</a>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

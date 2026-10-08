@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/head :: head(${programme.name})}"></head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+            <div class="page-eyebrow">Module 2 — Award Management</div>
+            <h2 class="mb-1" th:text="${programme.name}">Programme</h2>
+            <span class="badge-status" th:classappend="'badge-' + ${#strings.toLowerCase(programme.status)}" th:text="${programme.status}">OPEN</span>
+        </div>
+        <a th:href="@{'/awards/' + ${programme.id} + '/categories/new'}" class="btn btn-gold"
+           th:if="${session.loggedInUser != null and session.loggedInUser.hasPermission(T(com.sliit.awardvote.user.model.Permission).MANAGE_AWARDS)}">
+            <i class="bi bi-plus-circle me-1"></i>New Category
+        </a>
+    </div>
+    <p class="text-muted" th:text="${programme.description}">Description</p>
+
+    <div class="ledger-rule"><span><i class="bi bi-collection me-1"></i>Categories</span></div>
+    <div class="row g-4">
+        <div class="col-md-6" th:each="c : ${categories}">
+            <div class="av-card p-3 h-100">
+                <div class="d-flex justify-content-between">
+                    <h5 th:text="${c.name}">Category</h5>
+                    <span class="badge-status" th:classappend="${c.votingOpen} ? 'badge-open' : 'badge-closed'"
+                          th:text="${c.votingOpen} ? 'Voting Open' : 'Voting Closed'">Status</span>
+                </div>
+                <p class="text-muted small" th:text="${c.description}">Description</p>
+                <p class="small"><strong>Eligibility:</strong> <span th:text="${c.eligibilityCriteria}"></span></p>
+                <div class="d-flex gap-2 mt-2">
+                    <a th:href="@{'/nominations/new'}" class="btn btn-outline-navy btn-sm"><i class="bi bi-clipboard-plus me-1"></i>Nominate Someone</a>
+                    <a th:href="@{'/categories/' + ${c.id} + '/edit'}" class="btn btn-outline-secondary btn-sm"
+                       th:if="${session.loggedInUser != null and session.loggedInUser.hasPermission(T(com.sliit.awardvote.user.model.Permission).MANAGE_AWARDS)}"><i class="bi bi-pencil me-1"></i>Edit</a>
+                    <a th:href="@{'/categories/' + ${c.id} + '/delete'}" class="btn btn-outline-danger btn-sm"
+                       onclick="return confirm('Delete this category?')"
+                       th:if="${session.loggedInUser != null and session.loggedInUser.hasPermission(T(com.sliit.awardvote.user.model.Permission).MANAGE_AWARDS)}"><i class="bi bi-trash me-1"></i>Delete</a>
+                </div>
+                <hr>
+                <p class="small mb-1"><strong>Approved nominees</strong>
+                    <span class="text-muted">— one vote and one judged pick allowed per category</span>:</p>
+
+                <div th:each="n : ${approvedByCategory.get(c.id)}"
+                     class="d-flex justify-content-between align-items-center py-2"
+                     style="border-bottom:1px solid var(--border-faint);">
+                    <div>
+                        <a th:href="@{'/nominations/' + ${n.id}}" class="small fw-semibold text-decoration-none" th:text="${n.nomineeName}">Nominee</a>
+                        <div class="text-muted small"><span th:text="${n.voteCount}">0</span> votes</div>
+                        <div class="vote-bar-track" style="max-width:140px;">
+                            <div class="vote-bar-fill" th:attr="data-width=${n.voteSharePercent}"></div>
+                        </div>
+                    </div>
+
+                    <!-- logged-out / non public-user visitors just see the vote count above -->
+
+                    <!-- public user: already voted for THIS nominee -->
+                    <span class="badge-status badge-approved" th:if="${myVotes != null and myVotes.get(c.id) == n.id}">
+                        <i class="bi bi-check-circle-fill me-1"></i>Your Vote
+                    </span>
+
+                    <!-- public user: already voted for a DIFFERENT nominee in this category -->
+                    <span class="badge-status badge-closed" th:if="${myVotes != null and myVotes.get(c.id) != null and myVotes.get(c.id) != n.id}">
+                        Vote Used
+                    </span>
+
+                    <!-- public user: no vote cast yet in this category and voting is open -->
+                    <form th:if="${myVotes != null and myVotes.get(c.id) == null and c.votingOpen}"
+                          th:action="@{'/nominations/' + ${n.id} + '/vote'}" method="post">
+                        <button type="submit" class="btn btn-sm btn-gold"><i class="bi bi-hand-thumbs-up-fill me-1"></i>Vote</button>
+                    </form>
+
+                    <!-- judge: already picked THIS nominee -->
+                    <span class="badge-status badge-approved" th:if="${myJudgments != null and myJudgments.get(c.id) == n.id}">
+                        <i class="bi bi-star-fill me-1"></i>Your Pick
+                    </span>
+
+                    <!-- judge: already picked a DIFFERENT nominee in this category -->
+                    <span class="badge-status badge-closed" th:if="${myJudgments != null and myJudgments.get(c.id) != null and myJudgments.get(c.id) != n.id}">
+                        Pick Used
+                    </span>
+
+                    <!-- judge: no pick yet and judging is enabled for this category -->
+                    <a th:if="${myJudgments != null and myJudgments.get(c.id) == null and c.judgingEnabled}"
+                       th:href="@{'/nominations/' + ${n.id}}" class="btn btn-sm btn-gold"><i class="bi bi-star-fill me-1"></i>Judge</a>
+                </div>
+
+                <div class="empty-state py-3" th:if="${#lists.isEmpty(approvedByCategory.get(c.id))}">
+                    <i class="bi bi-person-x"></i>
+                    <p class="mb-0 small">No approved nominees in this category yet.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-12" th:if="${#lists.isEmpty(categories)}">
+            <div class="empty-state"><i class="bi bi-collection"></i><p>No categories yet for this programme.</p></div>
+        </div>
+    </div>
+
+    <div th:replace="~{notifications/award-feedback :: awardFeedbackSection}"></div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>
