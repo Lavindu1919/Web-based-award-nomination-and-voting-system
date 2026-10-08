@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+<head th:replace="~{fragments/head :: head('User Form')}"></head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="container py-5" style="max-width:640px;">
+    <div class="page-eyebrow">Module 1 — User Management</div>
+    <h2 class="mb-4" th:text="${user.id} != null ? 'Edit User' : 'New User'">User Form</h2>
+    <div class="alert alert-danger py-2" th:if="${error}"><i class="bi bi-exclamation-triangle me-1"></i><span th:text="${error}"></span></div>
+    <div class="av-card p-4">
+        <form th:action="@{/users/save}" th:object="${user}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <div class="mb-3">
+                <label class="form-label">Full Name</label>
+                <input type="text" th:field="*{fullName}" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" th:field="*{email}" class="form-control" maxlength="254" placeholder="name@example.com" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Phone</label>
+                <input type="text" th:field="*{phone}" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" th:field="*{username}" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password <span class="text-muted fw-normal">(leave as-is when editing to keep current password)</span></label>
+                <input type="text" th:field="*{password}" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Base Role</label>
+                <select th:field="*{role}" class="form-select">
+                    <option th:each="r : ${roles}" th:value="${r}" th:text="${r}"></option>
+                </select>
+                <div class="form-text">Determines the account's default permissions and primary category.</div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Custom Role <span class="text-muted fw-normal">(optional — replaces the Base Role's default permissions)</span></label>
+                <select name="customRoleId" class="form-select">
+                    <option value="">None</option>
+                    <option th:each="cr : ${customRoles}" th:value="${cr.id}" th:text="${cr.name}"
+                            th:selected="${user.customRole != null and user.customRole.id == cr.id}"></option>
+                </select>
+                <div class="form-text">
+                    <i class="bi bi-exclamation-triangle me-1"></i>Assigning one means this user gets
+                    <em>exactly</em> that role's permissions, not the Base Role's defaults plus it.
+                    Need a new one? <a th:href="@{/roles/new}">Create a custom role</a> first.
+                </div>
+            </div>
+            <div class="form-check mb-3">
+                <input type="checkbox" th:field="*{active}" class="form-check-input">
+                <label class="form-check-label">Active</label>
+            </div>
+            <button type="submit" class="btn btn-navy"><i class="bi bi-check-lg me-1"></i>Save</button>
+            <a th:href="@{/users}" class="btn btn-outline-secondary"><i class="bi bi-x-lg me-1"></i>Cancel</a>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

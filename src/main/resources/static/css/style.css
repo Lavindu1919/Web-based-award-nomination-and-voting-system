@@ -1,0 +1,1025 @@
+/* =========================================================================
+   Award Vote Lanka — dark professional theme
+   ========================================================================= */
+
+:root {
+    /* Page & surface hierarchy (darkest -> lightest) */
+    --bg-page: #070c18;
+    --bg-page-alt: #0a1122;
+    --surface: #0e1830;
+    --surface-hover: #13203e;
+    --surface-raised: #172848;
+
+    /* Navy accent ramp (used for buttons, plates, chrome) */
+    --navy-950: #070c18;
+    --navy-900: #0e1830;
+    --navy-800: #16345f;
+    --navy-700: #1f4c86;
+    --navy-600: #2c62a8;
+
+    /* Gold accent ramp */
+    --gold-600: #a9822a;
+    --gold-500: #d4af37;
+    --gold-400: #e6c65c;
+    --gold-100: #f6ecc9;
+
+    /* Text */
+    --ink: #eef1f8;
+    --ink-soft: #94a1ba;
+    --ink-faint: #66718c;
+
+    /* Status accents (brightened for contrast on dark surfaces) */
+    --teal-500: #3fae91;
+    --teal-300: #7fe0c4;
+    --brick-500: #e2596b;
+    --brick-300: #ff9aa6;
+
+    --border: rgba(212, 175, 55, 0.16);
+    --border-strong: rgba(212, 175, 55, 0.48);
+    --border-faint: rgba(238, 241, 248, 0.09);
+
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Inter', -apple-system, Segoe UI, sans-serif;
+
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-page);
+    background-image: radial-gradient(1400px 700px at 85% -10%, rgba(31, 76, 134, 0.16), transparent 60%),
+                       radial-gradient(1000px 600px at -5% 20%, rgba(212, 175, 55, 0.06), transparent 55%);
+    background-attachment: fixed;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    animation: pageFadeIn 0.4s var(--ease) both;
+}
+
+@keyframes pageFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+/* Accessible focus ring everywhere, not just form fields */
+a:focus-visible, button:focus-visible, .btn:focus-visible,
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--gold-500);
+    outline-offset: 2px;
+}
+
+::selection {
+    background: var(--gold-500);
+    color: var(--navy-950);
+}
+
+/* Slim gold scrollbar (Webkit) */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-page); }
+::-webkit-scrollbar-thumb { background: var(--gold-600); border-radius: 6px; border: 2px solid var(--bg-page); }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-500); }
+
+/* Card animations removed: cards appear immediately (classes kept so templates still work). */
+.reveal-grid > * { animation: none; }
+.reveal-on-scroll { opacity: 1; transform: none; transition: none; }
+
+h1, h2, h3, h4, .display-serif {
+    font-family: var(--font-display);
+    color: var(--ink);
+    letter-spacing: 0.01em;
+}
+
+a {
+    color: var(--gold-400);
+}
+a:hover {
+    color: var(--gold-300, var(--gold-400));
+}
+
+p, .text-muted, small, .small {
+    color: var(--ink-soft);
+}
+
+/* ---------- Ledger rule: signature divider ---------- */
+.ledger-rule {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 2.5rem 0 1.75rem;
+    color: var(--gold-500);
+}
+.ledger-rule::before,
+.ledger-rule::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: repeating-linear-gradient(90deg, var(--gold-500) 0 6px, transparent 6px 12px);
+    opacity: 0.45;
+}
+.ledger-rule span {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold-100);
+    white-space: nowrap;
+}
+
+/* ---------- Navbar ---------- */
+.av-navbar {
+    background: rgba(10, 18, 36, 0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 0 rgba(212,175,55,0.08);
+    transition: background-color 0.25s var(--ease), box-shadow 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+.av-navbar.is-elevated {
+    background: rgba(7, 12, 24, 0.96);
+    border-bottom-color: var(--border-strong);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+}
+.av-navbar .navbar-brand {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--gold-400) !important;
+    font-size: 1.4rem;
+    letter-spacing: 0.02em;
+}
+.av-navbar .navbar-brand .brand-sub {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    font-weight: 500;
+}
+.av-navbar .nav-link {
+    color: var(--ink) !important;
+    font-weight: 500;
+    font-size: 0.92rem;
+    opacity: 0.88;
+    transition: opacity 0.15s ease, color 0.15s ease;
+}
+.av-navbar .nav-link:hover,
+.av-navbar .nav-link.active {
+    color: var(--gold-400) !important;
+    opacity: 1;
+}
+.av-navbar .dropdown-menu {
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+}
+.av-navbar .dropdown-item {
+    color: var(--ink);
+}
+.av-navbar .dropdown-item:hover, .av-navbar .dropdown-item:focus {
+    background: rgba(212,175,55,0.12);
+    color: var(--gold-400);
+}
+.av-navbar .dropdown-divider {
+    border-color: var(--border);
+}
+
+/* ---------- Seal badge (signature motif) ---------- */
+.seal-badge {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--gold-400), var(--gold-500) 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--navy-950);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px var(--bg-page), 0 0 0 4px var(--gold-500), 0 4px 14px rgba(212,175,55,0.35);
+}
+
+/* ---------- Hero ---------- */
+.av-hero {
+    background:
+        radial-gradient(1100px 480px at 15% -10%, rgba(212,175,55,0.14), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, rgba(44,98,168,0.18), transparent 55%),
+        linear-gradient(160deg, #060a15, var(--bg-page-alt) 55%, var(--navy-900));
+    color: var(--ink);
+    padding: 6rem 0 5rem;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+}
+.av-hero::after {
+    content: "";
+    position: absolute;
+    right: -120px;
+    top: -120px;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    border: 1px solid rgba(212,175,55,0.18);
+    pointer-events: none;
+}
+.av-hero::before {
+    content: "";
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    border: 1px solid rgba(212,175,55,0.12);
+    pointer-events: none;
+}
+.av-hero .container { position: relative; z-index: 1; }
+.hero-seal {
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--gold-400), var(--gold-500) 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--navy-950);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 2.8rem;
+    box-shadow: 0 0 0 6px rgba(212,175,55,0.08), 0 0 0 8px rgba(212,175,55,0.4), 0 30px 70px rgba(0,0,0,0.55);
+    animation: sealFloat 5s ease-in-out infinite;
+}
+@keyframes sealFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+.hero-stats {
+    display: flex;
+    gap: 2.2rem;
+    margin-top: 2.2rem;
+    flex-wrap: wrap;
+}
+.hero-stats .stat b {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--gold-400);
+    display: block;
+    line-height: 1.1;
+}
+.hero-stats .stat span {
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+.av-hero .eyebrow {
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    color: var(--gold-400);
+    font-weight: 600;
+}
+.av-hero h1 {
+    color: var(--ink);
+    font-size: clamp(2.2rem, 4vw, 3.4rem);
+    line-height: 1.1;
+}
+.av-hero p.lead {
+    color: var(--ink-soft);
+    max-width: 640px;
+}
+
+/* ---------- Cards ---------- */
+.av-card {
+    background: var(--surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 8px;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset, 0 8px 20px rgba(0,0,0,0.25);
+}
+.av-card:hover {
+    background: var(--surface-hover);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(212,175,55,0.12);
+    border-color: var(--border-strong);
+}
+.av-card .card-header-plate {
+    background: linear-gradient(135deg, var(--navy-800), var(--navy-700));
+    color: var(--gold-100);
+    padding: 0.7rem 1.1rem;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom: 1px solid rgba(212,175,55,0.3);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+    border-radius: 5px;
+    transition: transform 0.15s var(--ease), box-shadow 0.2s var(--ease), background-color 0.15s var(--ease), color 0.15s var(--ease), border-color 0.15s var(--ease);
+}
+.btn:active {
+    transform: translateY(1px);
+}
+.btn i, .btn .bi {
+    vertical-align: -0.14em;
+}
+.btn-gold {
+    background: var(--gold-500);
+    border-color: var(--gold-500);
+    color: var(--navy-950);
+    font-weight: 600;
+}
+.btn-gold:hover {
+    background: var(--gold-400);
+    border-color: var(--gold-400);
+    color: var(--navy-950);
+    box-shadow: 0 8px 24px rgba(212,175,55,0.4);
+    transform: translateY(-1px);
+}
+.btn-navy {
+    background: var(--navy-800);
+    border: 1px solid rgba(212,175,55,0.22);
+    color: var(--ink);
+    font-weight: 600;
+}
+.btn-navy:hover {
+    background: var(--navy-700);
+    border-color: rgba(212,175,55,0.4);
+    color: var(--ink);
+    box-shadow: 0 8px 24px rgba(31,76,134,0.5);
+    transform: translateY(-1px);
+}
+.btn-outline-navy {
+    border-color: rgba(238,241,248,0.28);
+    color: var(--ink);
+    font-weight: 600;
+    background: transparent;
+}
+.btn-outline-navy:hover {
+    background: rgba(212,175,55,0.1);
+    border-color: var(--gold-500);
+    color: var(--gold-400);
+    transform: translateY(-1px);
+}
+.btn-outline-secondary {
+    color: var(--ink-soft);
+    border-color: var(--border-faint);
+}
+.btn-outline-secondary:hover {
+    background: rgba(238,241,248,0.06);
+    color: var(--ink);
+    border-color: rgba(238,241,248,0.3);
+    transform: translateY(-1px);
+}
+.btn-outline-danger {
+    color: var(--brick-300);
+    border-color: rgba(226,89,107,0.4);
+}
+.btn-outline-danger:hover {
+    background: rgba(226,89,107,0.14);
+    border-color: var(--brick-500);
+    color: var(--brick-300);
+    transform: translateY(-1px);
+}
+.btn-outline-light:hover {
+    box-shadow: 0 8px 20px rgba(255,255,255,0.08);
+    transform: translateY(-1px);
+}
+
+/* ---------- Status badges ---------- */
+.badge-status {
+    font-family: var(--font-body);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.68rem;
+    padding: 0.35em 0.65em;
+    border-radius: 3px;
+}
+.badge-approved, .badge-open, .badge-sent, .badge-resolved { background: rgba(63,174,145,0.16); color: var(--teal-300); }
+.badge-rejected, .badge-failed { background: rgba(226,89,107,0.16); color: var(--brick-300); }
+.badge-submitted, .badge-pending, .badge-draft { background: rgba(44,98,168,0.22); color: #a9c8f0; }
+.badge-under_review, .badge-in_progress { background: rgba(212,175,55,0.18); color: var(--gold-400); }
+.badge-closed, .badge-completed { background: rgba(148,161,186,0.16); color: var(--ink-soft); }
+
+/* ---------- Footer ---------- */
+.av-footer {
+    background: var(--navy-950);
+    color: var(--ink-soft);
+    padding: 2.5rem 0 1.5rem;
+    margin-top: 4rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+}
+.av-footer strong { color: var(--gold-400); }
+.av-footer a.text-white-50 { color: var(--ink-soft) !important; transition: color 0.15s ease; }
+.av-footer a.text-white-50:hover { color: var(--gold-400) !important; }
+
+/* ---------- Auth pages ---------- */
+.auth-shell {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(800px 400px at 20% 0%, rgba(212,175,55,0.08), transparent 60%),
+        linear-gradient(160deg, #060a15, var(--navy-900));
+    padding: 3rem 1rem;
+}
+.auth-card {
+    background: var(--surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 8px;
+    border-top: 4px solid var(--gold-500);
+    max-width: 440px;
+    width: 100%;
+    padding: 2.5rem;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+}
+
+/* ---------- Forms ---------- */
+.form-label {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 0.88rem;
+}
+.form-control, .form-select {
+    background-color: var(--surface);
+    border: 1px solid var(--border-faint);
+    color: var(--ink);
+}
+.form-control::placeholder {
+    color: var(--ink-faint);
+}
+.form-control:focus, .form-select:focus {
+    background-color: var(--surface);
+    border-color: var(--gold-500);
+    color: var(--ink);
+    box-shadow: 0 0 0 0.2rem rgba(212,175,55,0.2);
+}
+.form-check-input {
+    background-color: var(--surface);
+    border-color: var(--border-strong);
+}
+.form-check-input:checked {
+    background-color: var(--gold-500);
+    border-color: var(--gold-500);
+}
+textarea.form-control {
+    resize: vertical;
+}
+
+/* ---------- Dashboard stat tiles ---------- */
+.stat-tile {
+    background: var(--surface);
+    border: 1px solid var(--border-faint);
+    border-left: 3px solid var(--gold-500);
+    border-radius: 6px;
+    padding: 1.25rem 1.4rem;
+}
+.stat-tile:hover {
+    box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+}
+.stat-tile .stat-value {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: var(--ink);
+}
+.stat-tile .stat-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+}
+
+/* ---------- Table ---------- */
+.table-ledger {
+    color: var(--ink);
+    margin-bottom: 0;
+}
+.table-ledger thead {
+    background: linear-gradient(135deg, var(--navy-800), var(--navy-700));
+    color: var(--gold-100);
+}
+.table-ledger thead th {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+    border: none;
+    padding: 0.85rem 1rem;
+}
+.table-ledger tbody td {
+    border-color: var(--border-faint);
+    padding: 0.85rem 1rem;
+    vertical-align: middle;
+}
+.table-ledger tbody tr {
+    transition: background-color 0.15s ease;
+}
+.table-ledger tbody tr:hover {
+    background: rgba(212,175,55,0.06);
+}
+
+/* ---------- Empty states ---------- */
+.empty-state {
+    text-align: center;
+    padding: 3.5rem 1.5rem;
+    color: var(--ink-soft);
+}
+.empty-state i {
+    font-size: 2.4rem;
+    color: var(--gold-500);
+    opacity: 0.85;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+.empty-state p {
+    margin-bottom: 0.25rem;
+}
+
+/* ---------- Icon tiles (used on dashboard / feature cards) ---------- */
+.icon-tile {
+    width: 46px;
+    height: 46px;
+    border-radius: 9px;
+    background: var(--navy-800);
+    color: var(--gold-400);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+.av-card:hover .icon-tile {
+    background: var(--gold-500);
+    color: var(--navy-950);
+}
+
+/* ---------- Breadcrumb ---------- */
+.av-breadcrumb {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    margin-bottom: 1rem;
+}
+.av-breadcrumb a {
+    color: var(--gold-400);
+    text-decoration: none;
+}
+.av-breadcrumb a:hover { text-decoration: underline; }
+.av-breadcrumb .bi { font-size: 0.65rem; margin: 0 0.35rem; vertical-align: middle; }
+
+/* ---------- Alerts ---------- */
+.alert {
+    border: none;
+    border-left: 4px solid;
+    border-radius: 6px;
+    background-color: var(--surface);
+}
+.alert-success { border-left-color: var(--teal-500); color: var(--teal-300); background: rgba(63,174,145,0.08); }
+.alert-danger { border-left-color: var(--brick-500); color: var(--brick-300); background: rgba(226,89,107,0.08); }
+.alert-info { border-left-color: var(--navy-600); color: #a9c8f0; background: rgba(44,98,168,0.1); }
+.alert-warning { border-left-color: var(--gold-500); color: var(--gold-400); background: rgba(212,175,55,0.1); }
+
+/* ---------- Nav underline animation ---------- */
+.av-navbar .nav-link {
+    position: relative;
+    padding-bottom: 0.35rem !important;
+}
+.av-navbar .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: 0;
+    height: 2px;
+    background: var(--gold-500);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s var(--ease);
+}
+.av-navbar .nav-link:hover::after,
+.av-navbar .nav-link.active::after {
+    transform: scaleX(1);
+}
+
+/* ---------- Section eyebrow label (used above page titles) ---------- */
+.page-eyebrow {
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    color: var(--gold-500);
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+}
+
+/* ---------- Feature icon list (auth pages, forms) ---------- */
+.field-icon-group {
+    position: relative;
+}
+.field-icon-group .bi {
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold-500);
+    pointer-events: none;
+}
+.field-icon-group .form-control,
+.field-icon-group .form-select {
+    padding-left: 2.4rem;
+}
+
+/* ---------- Accordion (FAQ) ---------- */
+.accordion-item {
+    background: var(--surface);
+    border: 1px solid var(--border-faint);
+    margin-bottom: 0.5rem;
+    border-radius: 6px !important;
+    overflow: hidden;
+}
+.accordion-button {
+    background: var(--surface);
+    color: var(--ink);
+    font-weight: 500;
+}
+.accordion-button:not(.collapsed) {
+    background: rgba(212,175,55,0.08);
+    color: var(--gold-400);
+    box-shadow: none;
+}
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(212,175,55,0.2);
+    border-color: var(--gold-500);
+}
+.accordion-body {
+    color: var(--ink-soft);
+}
+
+/* ---------- Nav tabs (content management) ---------- */
+.nav-tabs {
+    border-bottom-color: var(--border);
+}
+.nav-tabs .nav-link {
+    color: var(--ink-soft);
+    border: none;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+.nav-tabs .nav-link:hover {
+    color: var(--gold-400);
+    border-color: transparent;
+}
+.nav-tabs .nav-link.active {
+    background: transparent;
+    color: var(--gold-400);
+    border-bottom-color: var(--gold-500);
+}
+
+/* ---------- List group (notifications) ---------- */
+.list-group-item {
+    background: var(--surface);
+    border-color: var(--border-faint);
+    color: var(--ink);
+    transition: background-color 0.15s ease;
+}
+.list-group-item:hover {
+    background: var(--surface-hover);
+}
+
+/* ---------- Responsive tweaks ---------- */
+@media (max-width: 767px) {
+    .av-hero { padding: 3.5rem 0 3rem; text-align: center; }
+    .hero-stats { justify-content: center; }
+    .stat-tile { text-align: center; }
+}
+
+/* =========================================================================
+   Colour & motion enrichment layer
+   Adds a broader accent palette (used sparingly, per-module) plus a set of
+   small, purposeful animations: a live-pulse dot on "open" states, an
+   animated gradient hero backdrop, number count-up support, a gold sheen
+   sweep on primary buttons, and click ripple feedback. Kept restrained so
+   the UI still reads as professional software rather than a landing page.
+   ========================================================================= */
+
+:root {
+    --accent-blue-a: #2c62a8;   --accent-blue-b: #4f8fe0;
+    --accent-purple-a: #5b3a9e; --accent-purple-b: #8a63d9;
+    --accent-teal-a: #1f7a63;   --accent-teal-b: #3fae91;
+    --accent-rose-a: #a13d5c;   --accent-rose-b: #e0678a;
+    --accent-orange-a: #a5641f; --accent-orange-b: #e0973f;
+}
+
+/* ---------- Colourful module icon tiles ---------- */
+.icon-tile-blue   { background: linear-gradient(135deg, var(--accent-blue-a), var(--accent-blue-b));   color: #eaf1ff; }
+.icon-tile-purple { background: linear-gradient(135deg, var(--accent-purple-a), var(--accent-purple-b)); color: #f3ecff; }
+.icon-tile-teal   { background: linear-gradient(135deg, var(--accent-teal-a), var(--accent-teal-b));   color: #e8fff9; }
+.icon-tile-rose   { background: linear-gradient(135deg, var(--accent-rose-a), var(--accent-rose-b));   color: #fff0f5; }
+.icon-tile-orange { background: linear-gradient(135deg, var(--accent-orange-a), var(--accent-orange-b)); color: #fff6ea; }
+.icon-tile-gold   { background: linear-gradient(135deg, var(--navy-800), var(--navy-700)); color: var(--gold-400); }
+
+/* Hover still resolves to the same confident gold across every tile, so the
+   colour variety reads as organisation at rest and a single unmistakable
+   "active" state on hover. */
+.av-card:hover [class^="icon-tile"],
+.av-card:hover [class*=" icon-tile"] {
+    background: var(--gold-500) !important;
+    color: var(--navy-950) !important;
+}
+
+/* ---------- Live pulse for "open / active" badges ---------- */
+.badge-open {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+}
+.badge-open::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    margin-right: 6px;
+    animation: pulseDot 1.7s ease-in-out infinite;
+}
+@keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 currentColor; }
+    50% { opacity: 0.55; transform: scale(0.72); }
+}
+
+/* ---------- Gradient hero heading + animated floating orbs ---------- */
+.hero-gradient-text {
+    background: linear-gradient(100deg, var(--ink) 30%, var(--gold-400) 55%, var(--gold-100) 65%, var(--ink) 85%);
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: heroShine 7s linear infinite;
+}
+@keyframes heroShine {
+    to { background-position: -220% center; }
+}
+
+.hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+}
+.hero-orb-gold {
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, var(--gold-500), transparent 70%);
+    top: -60px; right: 8%;
+    animation: orbFloatA 9s ease-in-out infinite;
+}
+.hero-orb-blue {
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, var(--accent-blue-b), transparent 70%);
+    bottom: -80px; left: 4%;
+    animation: orbFloatB 11s ease-in-out infinite;
+}
+.hero-orb-purple {
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, var(--accent-purple-b), transparent 70%);
+    top: 30%; left: 40%;
+    animation: orbFloatA 13s ease-in-out infinite reverse;
+    opacity: 0.22;
+}
+@keyframes orbFloatA {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-24px, 26px) scale(1.08); }
+}
+@keyframes orbFloatB {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(28px, -20px) scale(1.05); }
+}
+
+/* ---------- Gold sheen sweep on primary buttons ---------- */
+.btn-gold {
+    position: relative;
+    overflow: hidden;
+}
+.btn-gold::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -60%;
+    width: 40%; height: 100%;
+    background: linear-gradient(115deg, transparent, rgba(255,255,255,0.5), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.6s var(--ease);
+}
+.btn-gold:hover::after {
+    left: 130%;
+}
+
+/* ---------- Click ripple feedback (paired with app.js) ---------- */
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+.btn .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.45);
+    transform: scale(0);
+    animation: rippleAnim 0.6s ease-out;
+    pointer-events: none;
+}
+@keyframes rippleAnim {
+    to { transform: scale(2.6); opacity: 0; }
+}
+
+/* ---------- Count-up number targets ---------- */
+.count-up {
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Vote / score micro-bar (used next to nominee vote counts) ---------- */
+.vote-bar-track {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(238,241,248,0.08);
+    overflow: hidden;
+    margin-top: 4px;
+}
+.vote-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--gold-600), var(--gold-400));
+    width: 0;
+    transition: width 1s var(--ease);
+}
+
+/* ---------- Colour accents on stat tiles (variety without noise) ---------- */
+.stat-tile-blue { border-left-color: var(--accent-blue-b); }
+.stat-tile-purple { border-left-color: var(--accent-purple-b); }
+.stat-tile-teal { border-left-color: var(--accent-teal-b); }
+
+/* ---------- Actionable stat tile (e.g. pending reviews, open feedback > 0) ---------- */
+.stat-tile-actionable {
+    background: rgba(226, 89, 107, 0.08);
+    box-shadow: 0 0 0 1px rgba(226, 89, 107, 0.25);
+}
+.stat-tile-actionable .stat-value {
+    color: var(--brick-300);
+}
+.stat-tile-actionable i.bi {
+    color: var(--brick-300) !important;
+    animation: pulseDot 1.7s ease-in-out infinite;
+}
+
+/* ---------- Selectable option cards (e.g. forgot-password channel choice) ---------- */
+.btn-check:checked + .av-card {
+    border-color: var(--gold-500);
+    box-shadow: 0 0 0 2px rgba(212,175,55,0.35) inset;
+    background: rgba(212,175,55,0.08);
+}
+
+/* =========================================================================
+   3D MOTION LAYER — hero depth, tilt cards, banner transitions
+   Adds real perspective-based 3D motion on top of the existing theme.
+   Paired with app.js (.tilt-3d handlers, .av-banner-carousel controller,
+   .page-transition-in). Everything here respects prefers-reduced-motion.
+   ========================================================================= */
+
+/* ---------- Global page-load transition ---------- */
+body {
+    opacity: 0;
+    animation: pageFadeIn 0.6s var(--ease) forwards;
+}
+@keyframes pageFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Hero: 3D stage ---------- */
+.av-hero {
+    perspective: 1400px;
+}
+.av-hero .row {
+    transform-style: preserve-3d;
+}
+.hero-seal-stage {
+    perspective: 900px;
+}
+.hero-seal {
+    animation: sealFloat 5s ease-in-out infinite;
+    transform-style: preserve-3d;
+    transition: transform 0.15s ease-out;
+    will-change: transform;
+    cursor: default;
+}
+.hero-seal::before {
+    content: "";
+    position: absolute;
+    inset: -18px;
+    border-radius: 50%;
+    border: 1px dashed rgba(212,175,55,0.35);
+    animation: sealRingSpin 14s linear infinite;
+    transform: translateZ(-30px);
+}
+.hero-seal i {
+    transform: translateZ(40px);
+    display: inline-block;
+}
+@keyframes sealRingSpin {
+    to { transform: translateZ(-30px) rotate(360deg); }
+}
+
+/* Orbs get depth via translateZ + richer parallax, driven inline by app.js */
+.hero-orb {
+    will-change: transform;
+    transition: transform 0.2s ease-out;
+}
+
+/* ---------- 3D tilt cards (applied via app.js to .av-card, .stat-tile, etc.) ---------- */
+.tilt-3d {
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+}
+.tilt-3d-shine {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.14), transparent 55%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+.tilt-3d:hover .tilt-3d-shine {
+    opacity: 1;
+}
+
+/* ---------- Banner carousel: 3D cube/flip transition ---------- */
+.av-banner-stage {
+    perspective: 1600px;
+}
+#bannerCarousel .carousel-inner {
+    transform-style: preserve-3d;
+}
+#bannerCarousel .carousel-item {
+    transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.9s ease;
+    backface-visibility: hidden;
+}
+#bannerCarousel .carousel-item img {
+    transition: transform 6s ease-out;
+    transform: scale(1.04);
+}
+#bannerCarousel .carousel-item.active img {
+    transform: scale(1.12);
+}
+/* Directional 3D rotation applied by app.js just before Bootstrap swaps slides */
+#bannerCarousel.rotate-next .carousel-item-next,
+#bannerCarousel.rotate-next .active.carousel-item-start {
+    animation: bannerRotateOutLeft 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+}
+#bannerCarousel.rotate-prev .carousel-item-prev,
+#bannerCarousel.rotate-prev .active.carousel-item-end {
+    animation: bannerRotateOutRight 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+}
+@keyframes bannerRotateOutLeft {
+    from { transform: rotateY(0deg) scale(1); opacity: 1; }
+    to   { transform: rotateY(-25deg) scale(0.92); opacity: 0.3; }
+}
+@keyframes bannerRotateOutRight {
+    from { transform: rotateY(0deg) scale(1); opacity: 1; }
+    to   { transform: rotateY(25deg) scale(0.92); opacity: 0.3; }
+}
+.av-banner-stage .carousel-indicators [data-bs-slide-to] {
+    background-color: var(--gold-400);
+}
+.av-banner-stage .carousel-control-prev,
+.av-banner-stage .carousel-control-next {
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.av-banner-stage .carousel-control-prev:hover,
+.av-banner-stage .carousel-control-next:hover {
+    transform: translateY(-50%) scale(1.15);
+}
+.av-banner-stage .carousel-control-prev { top: 50%; transform: translateY(-50%); bottom: auto; }
+.av-banner-stage .carousel-control-next { top: 50%; transform: translateY(-50%); bottom: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+    body { animation: none; opacity: 1; }
+    .hero-seal, .hero-orb, .tilt-3d, #bannerCarousel .carousel-item,
+    #bannerCarousel .carousel-item img { animation: none !important; transition: none !important; }
+}
